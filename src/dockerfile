@@ -2,14 +2,17 @@ FROM python:3.11
 
 WORKDIR /code​
 
+RUN git clone https://github.com/adbouk-1/4-week-project.git 4-week-project
 
-COPY /src/ ./code/​
+COPY 4-week-project/src ./code/​
 
-RUN apt-get update​ \
-    cd ./code/ \
-    python -m venv . \
-    source /bin/activate \
+RUN apt-get update​ &&\
+    cd ./code/ &&\
+    python -m venv . &&\
+    source /bin/activate &&\
     pip3 install -r ./code/requirements.txt​
+
+RUN python main.py
 
 CMD ["sleep infinity"]
 
