@@ -1,0 +1,23 @@
+services:
+
+  service:
+    build:
+
+    context: ./service
+
+    command: python3 main.py
+
+    volumes:
+      - ./service/:/code
+
+    ports:
+      - "5000:5000"
+
+    devices:
+      - "/dev/video0:/dev/video0"
+    privileged: true
+
+    networks:
+      dial:
+
+restart: always

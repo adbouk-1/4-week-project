@@ -28,15 +28,15 @@ def get_sharepoint_context_using_user(sharepoint_url):
     return ctx
 
 
-sharepoint_url = 'https://pilmembranesltd.sharepoint.com/'
-context = get_sharepoint_context_using_user(sharepoint_url)
+# sharepoint_url = 'https://pilmembranesltd.sharepoint.com/'
+# context = get_sharepoint_context_using_user(sharepoint_url)
 
 
-folder_path = "/Shared Documents/Line 2 Fault Detection Images (Shoestring)"
+# folder_path = "/Shared Documents/Line 2 Fault Detection Images (Shoestring)"
 
-target_folder = context.web.get_folder_by_server_relative_url(
-        folder_path
-    )
+# target_folder = context.web.get_folder_by_server_relative_url(
+#         folder_path
+#     )
 
 def authenticate(sp_url, sp_site, user_name, password): 
     """ 
@@ -45,15 +45,15 @@ def authenticate(sp_url, sp_site, user_name, password):
     """ 
     site = None 
     try: 
-        authcookie = Office365(SHAREPOINT_URL, username=USERNAME, password=PASSWORD).GetCookies() 
-        site = Site(SHAREPOINT_SITE, version=Version.v365, authcookie=authcookie) 
+        authcookie = Office365(sp_url, username=user_name, password=password).GetCookies() 
+        site = Site(sp_site, version=Version.v365, authcookie=authcookie) 
     except: 
         # We should log the specific type of error occurred. 
         print('Failed to connect to SP site: {}'.format(sys.exc_info()[1])) 
     return site 
   
 # Test the function 
-sp_site = authenticate(SHAREPOINT_URL,SHAREPOINT_SITE,USERNAME,PASSWORD) 
+# sp_site = authenticate(SHAREPOINT_URL,SHAREPOINT_SITE,USERNAME,PASSWORD) 
 
 
 def get_sp_list(sp_site, sp_list_name): 
@@ -63,14 +63,14 @@ def get_sp_list(sp_site, sp_list_name):
     """ 
     sp_list = None 
     try: 
-        sp_list = sp_site.List(SHAREPOINT_LIST) 
+        sp_list = sp_site.List(sp_list_name) 
     except: 
         # We should log the specific type of error occurred. 
         print('Failed to connect to SP list: {}'.format(sys.exc_info()[1])) 
     return sp_list 
   
 # Test the function 
-sp_list = get_sp_list(sp_site, SHAREPOINT_LIST)
+# sp_list = get_sp_list(sp_site, SHAREPOINT_LIST)
 
 def download_list_items(sp_list, view_name=None, fields=None, query=None, row_limit=0): 
     """ 
@@ -157,26 +157,26 @@ def monitor_csv_file(sp_list, filepath, archive_path, interval=5, max_rows=1000)
     print(f"Monitoring {filepath} for new rows...")
     last_known_row = 0
    
-    while True:
-        # Check and potentially archive old rows
-        #try:
-        rows_removed = archive_old_rows(filepath, archive_path, max_rows)
-        #except:
-            #rows_removed = 0
-        if rows_removed > 0:
-            last_known_row = max(last_known_row - rows_removed, 0)
-       
-        with open(filepath, 'r', newline='') as file:
-            reader = csv.DictReader(file)
-            current_rows = list(reader)
-            if len(current_rows) > last_known_row:
-                for row in current_rows[last_known_row:]:
-                    process_new_row(sp_list, row)
-                last_known_row = len(current_rows)
-       
-        time.sleep(interval)
+    # while True:
+    # Check and potentially archive old rows
+    #try:
+    rows_removed = archive_old_rows(filepath, archive_path, max_rows)
+    #except:
+        #rows_removed = 0
+    if rows_removed > 0:
+        last_known_row = max(last_known_row - rows_removed, 0)
+    
+    with open(filepath, 'r', newline='') as file:
+        reader = csv.DictReader(file)
+        current_rows = list(reader)
+        if len(current_rows) > last_known_row:
+            for row in current_rows[last_known_row:]:
+                process_new_row(sp_list, row)
+            last_known_row = len(current_rows)
+    
+        # time.sleep(interval)
 
 # Replace 'your_file.csv' and 'your_archive_path' with your actual file paths.
-monitor_csv_file(sp_list, 'metadata.csv', '', interval=5, max_rows=10)
+# monitor_csv_file(sp_list, 'metadata.csv', '', interval=5, max_rows=10)
 
  

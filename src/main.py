@@ -6,6 +6,28 @@ import datetime
 import os.path
 import os
 import time
+from sharepoint_wrapper.sharepoint_upload import *
+
+AUTHOR_PAGE_URL = 'https://www.mssqltips.com/sql-server-mssqltips-authors/' 
+SHAREPOINT_URL = 'https://pilmembranesltd.sharepoint.com/' 
+SHAREPOINT_SITE = 'https://pilmembranesltd.sharepoint.com/' 
+SHAREPOINT_LIST = 'Fault Detection Image Dataset (Line 2)' 
+USERNAME = 'ShoeStringuser@pilmembranes.com' 
+PASSWORD = 'Baz15685'
+
+sharepoint_url = 'https://pilmembranesltd.sharepoint.com/'
+context = get_sharepoint_context_using_user(sharepoint_url)
+
+
+folder_path = "/Shared Documents/Line 2 Fault Detection Images (Shoestring)"
+
+target_folder = context.web.get_folder_by_server_relative_url(
+        folder_path
+    )
+
+sp_site = authenticate(SHAREPOINT_URL,SHAREPOINT_SITE,USERNAME,PASSWORD) 
+sp_list = get_sp_list(sp_site, SHAREPOINT_LIST)
+
 
 def wait_for_file_unlock(filepath, timeout=300, interval=0.3):
     """
@@ -55,6 +77,7 @@ picam0 = Picamera2(0)
 picam0.start_preview(Preview.QTGL)
 picam0.start()
 csv_path = "metadata.csv"
+
 while True:
     filename = uuid.uuid4().hex
     filepath = filename + ".jpg"
@@ -64,6 +87,8 @@ while True:
     metadata = {'Image Name':filename, "Image": filepath, "Image URL": "", "Guess": "No Fault", "Actual":"n/a", "Confidence": 0.500, "Camera": 'Camera 2', "ApprovalStatus": 'Pending', "Timestamp": datetime.datetime.now()}
     
     append_list_as_row(csv_path, metadata)
+    monitor_csv_file(sp_list, csv_path, '', interval=5, max_rows=10)
+
         
 picam0.stop()
 picam0.stop_preview()

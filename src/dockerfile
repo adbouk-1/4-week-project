@@ -1,0 +1,17 @@
+FROM python:3.11
+
+WORKDIR /code​
+
+
+COPY /src/ ./code/​
+
+RUN apt-get update​ \
+    cd ./code/ \
+    python -m venv . \
+    source /bin/activate \
+    pip3 install -r ./code/requirements.txt​
+
+CMD ["sleep infinity"]
+
+
+
