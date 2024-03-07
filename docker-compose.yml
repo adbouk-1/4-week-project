@@ -1,23 +1,13 @@
 services:
 
   service:
-    build:
-
-    context: ./service
-
-    command: python3 main.py
+    image: raspi_script
 
     volumes:
-      - ./service/:/code
+      - /home/vision-2-line2/Documents/error-vision-system/:/code/src/data
 
-    ports:
-      - "5000:5000"
 
-    devices:
-      - "/dev/video0:/dev/video0"
-    privileged: true
+    # networks:
+    #   dial:
 
-    networks:
-      dial:
-
-restart: always
+# restart: alway
