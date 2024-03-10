@@ -13,7 +13,7 @@ SHAREPOINT_LIST_FAULT = 'SP2 - Detected Faults' #Detected faults with high confi
 SHAREPOINT_LIST_LOW_CONF = 'SP1 - Check Faults' #Any image with a low confidence will be sent to the list for verification
 USERNAME = 'ShoeStringuser@pilmembranes.com' #username for signing in to sharepoint
 PASSWORD = 'Baz15685' #password for signing in to sharepoint
-IMAGE_UPLOAD_PATH = "/Shared Documents/Line 2 Fault Detection Images (Shoestring)" #folder path within sharepoint where the images themselves will be uploaded
+IMAGE_UPLOAD_PATH = "/Shared Documents/Imgs" #folder path within sharepoint where the images themselves will be uploaded
 
 
 #additional variables required for running the script
