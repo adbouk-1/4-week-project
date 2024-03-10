@@ -5,7 +5,7 @@ from shareplum import Site, Office365
 from office365.runtime.auth.user_credential import UserCredential
 from office365.sharepoint.client_context import ClientContext
 
-def get_sharepoint_context_using_user(sharepoint_url, username, password):
+def get_sharepoint_context_using_user(sharepoint_url: str, username: str, password: str) -> ClientContext:
     """
     Get a SharePoint context using user credentials.
 
@@ -27,9 +27,17 @@ def get_sharepoint_context_using_user(sharepoint_url, username, password):
     ctx = get_sharepoint_context_using_user(sharepoint_url, username, password)
     """
 
-    user_credentials = UserCredential(username, password)
-    ctx = ClientContext(sharepoint_url).with_credentials(user_credentials)
-    return ctx
+    if not sharepoint_url or not username or not password:
+        raise ValueError("Invalid input parameters")
+
+    try:
+        user_credentials = UserCredential(username, password)
+        ctx = ClientContext(sharepoint_url).with_credentials(user_credentials)
+        return ctx
+    except Exception as e:
+        print(f"Error occurred during SharePoint context creation: {str(e)}")
+        return None
+    
 
 def authenticate(sp_url, sp_site, user_name, password): 
     """
@@ -54,7 +62,9 @@ def authenticate(sp_url, sp_site, user_name, password):
     password = "password123"
     site = authenticate(sp_url, sp_site, user_name, password)
     """
-    
+    if not sp_url or not sp_site or not user_name or not password:
+        raise ValueError("Invalid input parameters")
+        
     site = None 
     try: 
         authcookie = Office365(sp_url, username=user_name, password=password).GetCookies() 
@@ -78,6 +88,9 @@ def get_sp_list(sp_site, sp_list_name):
     Returns:
     - sp_list: The SharePoint list object if the connection is successful, None otherwise.
     """
+
+    if not sp_list_name or not sp_site:
+        raise ValueError("Invalid input parameters")
 
     sp_list = None 
     try: 
@@ -104,7 +117,9 @@ def download_list_items(sp_list, view_name=None, fields=None, query=None, row_li
     Raises:
     - SystemExit: If an error occurs while downloading list items.
     """
-
+    if not sp_list:
+        raise ValueError("Invalid input parameters")
+    
     sp_list_items = None 
     try: 
         sp_list_items = sp_list.GetListItems(view_name=view_name, fields=fields, query=query, row_limit=row_limit) 
@@ -129,7 +144,10 @@ def create_list_items(sp_list, new_items):
     Raises:
     - Exception: If there is an error updating the SharePoint list.
     """
-
+    
+    if not sp_list or not new_items:
+        raise ValueError("Invalid input parameters")
+    
     if len(new_items) > 0: 
         try: 
             sp_list.UpdateListItems(data=new_items, kind='New') 
