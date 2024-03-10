@@ -1,0 +1,1 @@
+#TODO: THIS file will contain all the commands to automatically initialise the code onto the pi and set image capture + upload modules running. This file will run at startup to make sure it runs every time it is plugged in

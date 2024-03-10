@@ -1,0 +1,13 @@
+services:
+
+  service:
+    image: raspi_script
+
+    volumes:
+      - /home/vision-2-line2/Documents/error-vision-system/:/code/src/data
+
+
+    # networks:
+    #   dial:
+
+# restart: alway
