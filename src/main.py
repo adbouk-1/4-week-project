@@ -17,13 +17,14 @@ IMAGE_UPLOAD_PATH = "/Shared Documents/Imgs" #folder path within sharepoint wher
 
 
 #additional variables required for running the script
-CNN_FOLDER_PATH = "/code/src/classifier/models/model.h5" #the path points to where the model will be stored in the docker container
+CNN_FOLDER_PATH = "/code/src/classifier/models/model.h5" #the path points to where the model will be stored in the docker container TODO: Place a working model in this path
 METADATA_CSV_PATH = '/code/src/data/metadata.csv' #Where the metadata of all the images is stored
 IMAGE_STORE_PATH = "/code/src/data/" #where the images will be stored in the docker container. The path will be mapped to a folder path on the raspberry pi as defined in the Docker Comopose YAML
 
 
 #Load the trained cnn classifier model from the following path
-loaded_model = load_model_from_file(CNN_FOLDER_PATH)
+# loaded_model = load_model_from_file(CNN_FOLDER_PATH) TODO: Uncomment once the model works and is downloaded onto the system
+loaded_model = ""
 
 
 #The context provides authentication to the sharepoint so that the images can be uploaded
@@ -57,36 +58,39 @@ def process_new_row(sp_list_low_conf, sp_list_fault, loaded_model, row):
 
     print("Processing new row:", row)
 
-    file_path = IMAGE_STORE_PATH + row["Image"] #file path of the image that will be uploaded to sharepoint
+    file_path = IMAGE_STORE_PATH + row["Image Name"] + ".jpg" #file path of the image that will be uploaded to sharepoint
 
     #upload the image to sharepoint
     with open(file_path, "rb") as content_file:
         file_content = content_file.read()
         target_folder.upload_file(os.path.basename(file_path), file_content).execute_query()
 
-    full_path = SHAREPOINT_URL + IMAGE_UPLOAD_PATH.replace(" ", "%20") + "/" + os.path.basename(file_path) #get the sharepoint path of the newly uploaded image
+    full_path = SHAREPOINT_URL + IMAGE_UPLOAD_PATH.replace(" ", "%20")[1:] + "/" + os.path.basename(file_path) #get the sharepoint path of the newly uploaded image
 
     #update the csv row with the new sharepoint path
     row["Image"] = full_path
     row["Image URL"] = full_path
     
-    #put the image through the model to classify whether there is a fault or not
-    predicted_class = predict_image(loaded_model, file_path) #the function will return a list of 2 numbers representing the probabilities of it being a fault/no fault
+    #put the image through the model to classify whether there is a fault or not TODO: Uncomment this whole block and delete the 3 rows below it once the model works and is installed in the correct location
+    # predicted_class = predict_image(loaded_model, file_path) #the function will return a list of 2 numbers representing the probabilities of it being a fault/no fault
 
-    #update the csv with the classifier guess and prediction
-    if predicted_class[0] > predicted_class[1]:
-        row["Guess"] = "Fault"
-        row["Confidence"] = predicted_class[0]
-    else:
-        row["Guess"] = "No Fault"
-        row["Confidence"] = predicted_class[1]
+    # #update the csv with the classifier guess and prediction
+    # if predicted_class[0] > predicted_class[1]:
+    #     row["Guess"] = "Fault"
+    #     row["Confidence"] = predicted_class[0]
+    # else:
+    #     row["Guess"] = "No Fault"
+    #     row["Confidence"] = predicted_class[1]
 
-    #upload the final csv row to the relevant sharepoint list
-    if row["Guess"] == "Fault" and row["Confidence"] > 0.85:
-        create_list_items(sp_list_fault, [row])
-    elif row["Confidence"] < 0.85:
-        create_list_items(sp_list_low_conf, [row])
- 
+    # #upload the final csv row to the relevant sharepoint list
+    # if row["Guess"] == "Fault" and row["Confidence"] > 0.85:
+    #     create_list_items(sp_list_fault, [row])
+    # elif row["Confidence"] < 0.85:
+    #     create_list_items(sp_list_low_conf, [row])
+
+    row["Guess"] = "No Fault"
+    row["Confidence"] = 0
+    create_list_items(sp_list_low_conf, [row])
 
 def archive_old_rows(filepath, max_rows=1000):
     """
